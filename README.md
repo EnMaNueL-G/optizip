@@ -99,7 +99,7 @@ El precio, también medido:
 - **No crea archivos .rar.** La licencia de RAR no lo permite. Sí los abre, los extrae y los convierte a 7z o ZIP.
 - **Las fotos y vídeos ya comprimidos (JPG, MP4, MP3…) apenas bajan** sin pérdida con 7z o ZIP: ningún compresor general los reduce más de un 3-4 %. La recompresión sin pérdida de JPG/PNG/PDF ahorra normalmente un 2-20 %; el modo Máximo, más (ver cifras), pero es mucho más lento.
 - **Un .ozx solo lo restaura OptiZip.** 7-Zip o WinRAR lo abren, pero no devuelven los archivos originales. Para enviárselo a otra persona, conviértelo a 7z o ZIP.
-- **En Windows 11 el submenú del clic derecho está en «Mostrar más opciones»** (o Mayús + F10). El menú corto nuevo solo admite programas instalados como paquete MSIX firmado, y OptiZip es portable.
+- **Menú principal del clic derecho de Windows 11 (desde la v1.2.0):** OptiZip incluye un paquete MSIX firmado con un **certificado propio de OptiSuite** (autofirmado). Al pulsar *Integración con Windows → Menú principal de Windows 11 → Activar*, Windows pide **una vez** permiso de administrador para confiar en ese certificado; el resto se instala solo para tu usuario y *Desactivar* lo deshace. Si no lo activas, el submenú está en «Mostrar más opciones» (o Mayús + F10). WinRAR no pide ese paso porque usa un certificado comercial de pago.
 - **No cambia tu programa predeterminado por su cuenta**: Windows no lo permite. Si quieres que el doble clic abra OptiZip, elígelo tú en Configuración → Aplicaciones predeterminadas.
 - Si olvidas la contraseña de un archivo cifrado, **no hay forma de recuperarlo**.
 
