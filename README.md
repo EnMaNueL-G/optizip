@@ -18,7 +18,7 @@ Parte de la suite **[OptiSuite](https://optisuite.app/optizip/)** · Windows 10/
 
 ## Descarga
 
-[**OptiZip-Portable.zip**](https://github.com/EnMaNueL-G/optizip/releases/latest/download/OptiZip-Portable.zip) (~144 MB, versión 1.1.0). No hace falta instalar nada.
+[**OptiZip-Portable.zip**](https://github.com/EnMaNueL-G/optizip/releases/latest/download/OptiZip-Portable.zip) (~144 MB, versión 1.3.0). No hace falta instalar nada.
 
 1. Clic derecho en el ZIP → **«Extraer todo…»** (no lo abras sin extraer).
 2. Abre **`OptiZip.exe`** dentro de la carpeta `OptiZip`.
@@ -27,7 +27,7 @@ Parte de la suite **[OptiSuite](https://optisuite.app/optizip/)** · Windows 10/
 ## Qué hace
 
 - **Comprimir** en 7z, ZIP, TAR, tar.zst, tar.xz, tar.gz, tar.bz2, WIM, ZST, GZ, XZ y BZ2. Formato «Automático» si no quieres elegir.
-- **Niveles** Rápido, Normal, Máximo, **Ultra** y **Extremo**. Ultra en 7z es **multimétodo**: separa el texto por tipo, prueba LZMA2 y PPMd en cada grupo y se queda con el más pequeño. El resultado sigue siendo un **.7z estándar** que abre cualquier 7-Zip.
+- **Niveles** Rápido, Normal, Máximo, **Ultra** y **Extremo**. **Normal** (por defecto) comprime en 7z por bloques que se descomprimen en paralelo, y la extracción usa varios procesos a la vez cuando hay muchos archivos. Ultra en 7z es **multimétodo**: separa el texto por tipo, elige entre LZMA2 y PPMd en cada grupo (comprobándolo con el grupo entero en los casos dudosos). El resultado sigue siendo un **.7z estándar** que abre cualquier 7-Zip.
 - **Modo Máximo (.ozx)**: transforma sin pérdida JPG (JPEG XL / packJPG), PDF, PNG, Office, APK y ZIP antes de comprimir, y guarda una sola vez los archivos repetidos. Cada archivo se restaura **idéntico byte a byte** (comprobado con SHA-256 antes de entregarte el .ozx).
 - **Análisis previo**: antes de empezar te dice qué se va a reducir bien y qué no.
 - **Recompresión sin pérdida** opcional de JPG/PNG/PDF antes de comprimir (no toca tus originales; los píxeles se comprueban idénticos).
@@ -60,39 +60,78 @@ Parte de la suite **[OptiSuite](https://optisuite.app/optizip/)** · Windows 10/
 
 ## Cifras medidas
 
-Medido el 3 de octubre de 2026 en un Ryzen 7 5700G con 32 GB de RAM y SSD NVMe, frente al **7-Zip 26.00** instalado
-y al ZIP de Windows. Cada archivo creado se extrajo y se comparó **archivo por archivo con SHA-256** con el original.
-Los tamaños son exactos; los tiempos, de una sola ejecución. Negativo = OptiZip ocupa menos.
+Medido el 3-4 de octubre de 2026 en un Ryzen 7 5700G (16 hilos) con 32 GB de RAM, frente a **WinRAR 7.20** (`Rar.exe`, mismo motor que
+la ventana de WinRAR) y al **7-Zip 26.00** instalados. Cada archivo creado se extrajo con su propio extractor y se comparó
+**archivo por archivo con SHA-256** con el original: todo idéntico. Los tamaños son exactos; los tiempos, de una sola compresión
+(extracción: mediana de 3), con un ±10 % de ruido. Negativo = OptiZip ocupa menos.
 
-**Ultra (v1.1, archivo .7z estándar) frente a 7-Zip Ultra (`-mx9`)**
+**WinRAR en su máximo** («WinRAR Máxima+») = lo más fuerte que ofrece RAR 7.20: `-m5`, sólido, diccionario que abarca el conjunto
+entero y búsqueda exhaustiva `-mcx` (en cada conjunto se toma la variante, con o sin `-mcx`, que ocupa menos).
 
-| Conjunto | 7-Zip Ultra | OptiZip Ultra v1.1 | Diferencia |
+### Normal (el nivel por defecto) frente a WinRAR en su máximo
+
+| Conjunto | WinRAR Máxima+: tamaño · comprimir · extraer | **OptiZip Normal v1.3**: tamaño · comprimir · extraer |
+|---|---|---|
+| Texto (3566 archivos, 155,7 MB) | 7 162 254 B · 11,7 s · 2,44 s | **−1,67 %** · **7,1 s** · **0,90 s** |
+| Código (15 737 archivos, 125,8 MB) | 16 255 945 B · 32,5 s · 9,31 s | **−9,11 %** · **8,6 s** · **3,02 s** |
+| Programas DLL/EXE (289 archivos, 157,9 MB) | 42 574 065 B · 16,3 s · 0,92 s | **−2,35 %** · **8,6 s** · **0,68 s** |
+| Imágenes JPG/PNG (590 archivos, 131,2 MB) | 126 478 926 B · 4,9 s · 0,90 s | **−0,29 %** · **2,5 s** · **0,74 s** |
+| Mezcla (4437 archivos, 168,4 MB) | 59 963 483 B · 16,2 s · 3,27 s | **−3,78 %** · **12,8 s** · **1,63 s** |
+| **Total** | 252 434 673 B · 81,6 s · 16,83 s | **−2,08 %** · **39,7 s** · **6,96 s** |
+
+**Normal ocupa menos y comprime y extrae más rápido que WinRAR en su máximo en los 5 conjuntos.** Es un .7z estándar:
+lo abren 7-Zip, NanaZip o WinRAR. El margen más justo está en imágenes (JPG/PNG ya comprimidos) y en texto.
+
+### Ultra y modo Máximo (.ozx) frente a WinRAR en su máximo
+
+**Ultra v1.3** (.7z estándar multimétodo), medido en la misma sesión que WinRAR Máxima+:
+
+| Conjunto | WinRAR Máxima+: tamaño · comprimir · extraer | **OptiZip Ultra v1.3**: tamaño · comprimir · extraer |
+|---|---|---|
+| Texto | 7 162 254 B · 14,2 s · 2,42 s | 5 931 210 B (**−17,19 %**) · 33,0 s · 2,69 s |
+| Código | 16 265 019 B · 37,5 s · 10,04 s | 12 828 345 B (**−21,13 %**) · **30,1 s** · 21,11 s |
+| Programas | 42 574 065 B · 19,9 s · 1,03 s | 37 861 248 B (**−11,07 %**) · 50,0 s · 1,47 s |
+| Imágenes | 126 478 926 B · 6,8 s · 0,93 s | 126 107 400 B (−0,29 %) · **2,6 s** · **0,72 s** |
+| Mezcla | 59 958 970 B · 15,2 s · 3,33 s | 56 847 977 B (**−5,19 %**) · 24,7 s · 3,88 s |
+| **Total** | 252 439 234 B | 239 576 180 B (**−5,10 %**) |
+
+**Ultra ocupa un 5,1 % menos en total que WinRAR en su máximo, pero es más lento que WinRAR al comprimir en texto, programas
+y mezcla, y al extraer en todos salvo imágenes** (en código, 21,1 s frente a 10,0 s, porque PPMd descomprime en un solo proceso).
+Si quieres la velocidad de WinRAR con más reducción que él, usa **Normal**.
+
+**Modo Máximo (.ozx)** frente a WinRAR Máxima+ (tamaños medidos con el .ozx de la v1.2; el de la v1.3 ocupa prácticamente lo
+mismo, entre +0,01 % y −1,41 % según el conjunto): **−17,6 % en imágenes, −14,3 % en la mezcla y −15,9 % en total.**
+En texto, código y programas no aporta más que Ultra. Solo lo restaura OptiZip.
+
+**Frente a WinRAR sin tocar nada** (Normal: `-m3`, no sólido, 32 MB) la diferencia es mucho mayor: OptiZip Ultra ocupa **menos de
+la mitad** en texto (5,97 MB frente a 12,96 MB) y en código (12,78 MB frente a 26,53 MB).
+
+**Honestidad:** gran parte de la ventaja es del formato 7z, no mérito propio de OptiZip: **7-Zip Ultra a secas ya gana a WinRAR en
+su máximo por un 4,2 % en total.** WinRAR usa mucha menos RAM al extraer (menos de 200 MB; OptiZip Ultra hasta ~1 GB donde usa PPMd).
+
+### Frente a 7-Zip y al ZIP de Windows (medido con la v1.1)
+
+| Conjunto | 7-Zip Ultra (`-mx9`) | OptiZip Ultra v1.1 | Diferencia |
 |---|---:|---:|---:|
-| Documentos y texto (148 MiB, 3546 archivos) | 6 605 619 B | 5 958 403 B | **−9,80 %** |
-| Código fuente (120 MiB, 15 810 archivos) | 14 299 396 B | 12 740 382 B | **−10,90 %** |
-| Programas DLL/EXE (151 MiB, 289 archivos) | 38 019 085 B | 37 831 453 B | −0,49 % |
-| Imágenes JPG/PNG (125 MiB, 590 archivos) | 125 538 081 B | 125 546 760 B | +0,007 % (empate) |
-| Mezcla (161 MiB, 7876 archivos) | 58 212 802 B | 57 305 100 B | −1,56 % |
+| Documentos y texto (3546 archivos) | 6 605 619 B | 5 958 403 B | **−9,80 %** |
+| Código fuente (15 810 archivos) | 14 299 396 B | 12 740 382 B | **−10,90 %** |
+| Programas DLL/EXE (289 archivos) | 38 019 085 B | 37 831 453 B | −0,49 % |
+| Imágenes JPG/PNG (590 archivos) | 125 538 081 B | 125 546 760 B | +0,007 % (empate) |
+| Mezcla (7876 archivos) | 58 212 802 B | 57 305 100 B | −1,56 % |
 
-**Frente al ZIP de Windows** (`tar.exe -a`, medido con el Ultra de la v1.0, que ocupa igual o algo más que el de la v1.1):
-−69,2 % en texto, −54,2 % en código, −41,3 % en programas, −21,3 % en la mezcla y −1,6 % en imágenes.
-`Compress-Archive` de PowerShell no pudo crear el ZIP en 2 de los 5 conjuntos (fechas de archivo que su ZIP no acepta).
+Modo Máximo (.ozx) frente a 7-Zip Ultra: **−35,41 %** en documentos reales (PDF, DOCX, ZIP, APK, PNG; 18 archivos, 87,6 MiB),
+**−17,44 %** en imágenes JPG/PNG y **−13,57 %** en la mezcla.
 
-**Modo Máximo (.ozx) frente a 7-Zip Ultra**
+Frente al ZIP de Windows (`tar.exe -a`, medido con el Ultra de la v1.0): −69,2 % en texto, −54,2 % en código, −41,3 % en programas,
+−21,3 % en la mezcla y −1,6 % en imágenes.
 
-| Conjunto | 7-Zip Ultra | OptiZip Máximo .ozx | Diferencia |
-|---|---:|---:|---:|
-| Documentos reales: PDF, DOCX, ZIP, APK, PNG (18 archivos, 87,6 MiB) | 83 787 401 B | 54 118 118 B | **−35,41 %** |
-| Imágenes JPG/PNG (590 archivos) | 125 538 078 B | 103 640 974 B | **−17,44 %** |
-| Mezcla (7999 archivos) | 59 009 341 B | 51 000 087 B | **−13,57 %** |
-| Texto / código / programas | — | — | igual que Ultra (nada que transformar; Ultra en .7z es mejor ahí) |
+### El precio, también medido
 
-El precio, también medido:
-
-- **Ultra v1.1** tarda hasta 1,6 veces más que el Ultra de la v1.0. Donde usa PPMd, extraer es unas 2 veces más lento y puede necesitar hasta ~1 GB de RAM.
-- **Extremo** solo gana entre un 0,1 % y un 1 % más que Ultra y tarda entre 2,2 y 4,6 veces más.
-- **Normal** da exactamente el mismo archivo que 7-Zip por defecto (mismos argumentos, mismo 7-Zip 26.00).
-- **Máximo (.ozx)** tardó entre 30 y 40 veces más que 7-Zip Ultra en imágenes y documentos (360 s y 294 s frente a 11,5 s y 7,3 s), extraer fue entre 13 y 15 veces más lento y llegó a usar 9,8-10,3 GB de RAM al comprimir (con menos RAM elige un diccionario menor y comprime algo menos).
+- **Ultra** necesita hasta ~1 GB de RAM para extraer donde usa PPMd (código: 1005 MiB medidos) y lo indica en el resultado.
+- **Extremo** gana poco a Ultra (código −1,13 %, texto −0,12 % frente al Ultra v1.2) y tarda bastante más (código 214 s).
+- **Modo Máximo (.ozx) v1.3**: comprimir imágenes tarda 100 s (la v1.2, 342 s) y la mezcla 137 s; restaurar es mucho más
+  rápido que en la v1.2 (texto 19×, código 15×, mezcla 5,8×), pero sigue siendo lento en imágenes (22,6 s). Llega a usar
+  ~5,8 GB de RAM al comprimir imágenes y ~2,2 GB al restaurarlas.
 
 ## Lo que NO hace
 
